@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/analyzed_data.schema.json",
+  "title": "Interview Analyzed Data",
+  "description": "面试复盘阶段2：QA分析打分和整体评分输出结构。阶段1所有字段全部保留，在每个QA中追加分析字段，并新增overall整体分析",
+  "type": "object",
+  "required": [
+    "company", "position", "interview_stage", "interview_date",
+    "interviewer_qa", "candidate_retro_qa",
+    "overall"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "company": { "type": "string", "minLength": 1 },
+    "position": { "type": "string", "minLength": 1 },
+    "interview_stage": {
+      "type": "string",
+      "anyOf": [
+        { "enum": ["一面", "二面", "三面", "四面", "五面", "六面", "终面", "HR面", "技术面", "业务面", "交叉面", "待定"] },
+        { "pattern": "^[一二三四五六七八九十百]+面$" }
+      ]
+    },
+    "interview_date": {
+      "type": "string",
+      "pattern": "^(\\d{4}-\\d{2}-\\d{2}|待定)$"
+    },
+    "source_confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "company_from": { "type": "string" },
+        "position_from": { "type": "string" },
+        "stage_from": { "type": "string" },
+        "date_from": { "type": "string" }
+      }
+    },
+    "interviewer_qa": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "index", "question", "candidate_answer",
+          "question_type", "inspection_point", "answer_framework",
+          "rating", "rating_reason", "ideal_answer", "improve_todo"
+        ],
+        "properties": {
+          "index": { "type": "integer", "minimum": 1 },
+          "question": { "type": "string", "minLength": 1 },
+          "attitude_signals": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["追问", "打断", "表扬", "展开引导", "质疑", "沉默", "其他"] },
+            "default": []
+          },
+          "signal_inferred": { "type": "boolean", "default": false },
+          "signal_notes": { "type": "string" },
+          "candidate_answer": { "type": "string", "minLength": 0 },
+          "question_type": { "type": "string", "minLength": 2 },
+          "inspection_point": { "type": "string" },
+          "answer_framework": { "type": "string" },
+          "rating": {
+            "type": "string",
+            "enum": ["★★★★★", "★★★★☆", "★★★☆☆", "★★☆☆☆", "★☆☆☆☆"]
+          },
+          "rating_reason": { "type": "string" },
+          "ideal_answer": {
+            "type": "object",
+            "required": ["framework", "full_text"],
+            "additionalProperties": false,
+            "properties": {
+              "framework": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+              "full_text": { "type": "string", "minLength": 10 },
+              "no_resume_match": { "type": "boolean", "default": false }
+            }
+          },
+          "improve_todo": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "candidate_retro_qa": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["index", "question", "interviewer_answer", "position_insights", "action_items"],
+        "properties": {
+          "index": { "type": "integer", "minimum": 1 },
+          "question": { "type": "string", "minLength": 1 },
+          "signal_inferred": { "type": "boolean", "default": false },
+          "signal_notes": { "type": "string" },
+          "interviewer_answer": { "type": "string" },
+          "position_insights": { "type": "array", "items": { "type": "string" }, "minItems": 0 },
+          "action_items": { "type": "array", "items": { "type": "string" }, "minItems": 0 }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "overall": {
+      "type": "object",
+      "required": ["score", "pass", "reasons", "problems", "improvement_plan"],
+      "additionalProperties": false,
+      "properties": {
+        "score": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "pass": { "type": "string", "enum": ["是", "否", "待定"] },
+        "reasons": { "type": "string" },
+        "problems": {
+          "type": "array", "minItems": 0,
+          "items": {
+            "type": "object",
+            "required": ["title", "description", "category"],
+            "additionalProperties": false,
+            "properties": {
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "category": {
+                "type": "string",
+                "enum": ["思维型缺陷-表层", "思维型缺陷-深层", "知识型缺陷", "其他"]
+              }
+            }
+          }
+        },
+        "improvement_plan": {
+          "type": "array", "minItems": 0,
+          "items": {
+            "type": "object",
+            "required": ["todo", "type"],
+            "additionalProperties": false,
+            "properties": {
+              "todo": { "type": "string" },
+              "type": { "type": "string", "enum": ["学习项", "准备项"] },
+              "related_links": { "type": "array", "items": { "type": "string" }, "default": [] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

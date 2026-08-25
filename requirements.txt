@@ -1,0 +1,5 @@
+# 核心依赖：微软PDF转Markdown工具（用户已安装）
+markitdown>=0.1.0
+
+# 可选：JSON Schema校验（用于阶段1/2输出格式检查）
+jsonschema>=4.19.0,<5

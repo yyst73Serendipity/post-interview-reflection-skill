@@ -1,0 +1,148 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/extracted_data.schema.json",
+  "title": "Interview Extracted Data",
+  "description": "面试复盘阶段1：信息提取输出结构。包含公司/岗位/日期/阶段元信息 + 面试官QA列表 + 候选人反问QA列表",
+  "type": "object",
+  "required": [
+    "company",
+    "position",
+    "interview_stage",
+    "interview_date",
+    "interviewer_qa",
+    "candidate_retro_qa"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "company": {
+      "type": "string",
+      "minLength": 1,
+      "description": "公司名称，提取不到填'待定'"
+    },
+    "position": {
+      "type": "string",
+      "minLength": 1,
+      "description": "岗位名称，提取不到填'待定'"
+    },
+    "interview_stage": {
+      "type": "string",
+      "description": "面试阶段，枚举或'待定'",
+      "anyOf": [
+        {
+          "enum": [
+            "一面", "二面", "三面", "四面", "五面", "六面",
+            "终面", "HR面", "技术面", "业务面", "交叉面",
+            "待定"
+          ]
+        },
+        {
+          "pattern": "^[一二三四五六七八九十百]+面$"
+        }
+      ]
+    },
+    "interview_date": {
+      "type": "string",
+      "description": "面试日期，格式YYYY-MM-DD或'待定'",
+      "pattern": "^(\\d{4}-\\d{2}-\\d{2}|待定)$"
+    },
+    "source_confidence": {
+      "type": "object",
+      "description": "元信息来源标记（可选，用于debug）",
+      "additionalProperties": false,
+      "properties": {
+        "company_from": {
+          "type": "string",
+          "examples": ["filename", "infer_from_job_desc", "user_input", "待定"]
+        },
+        "position_from": {
+          "type": "string"
+        },
+        "stage_from": {
+          "type": "string"
+        },
+        "date_from": {
+          "type": "string"
+        }
+      }
+    },
+    "interviewer_qa": {
+      "type": "array",
+      "description": "面试官提问QA列表（含候选人对应回答）",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["index", "question", "candidate_answer"],
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "问题序号（从1开始）"
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "attitude_signals": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["追问", "打断", "表扬", "展开引导", "质疑", "沉默", "其他"]
+            },
+            "default": []
+          },
+          "signal_inferred": {
+            "type": "boolean",
+            "default": false,
+            "description": "true表示这道题的问题或回答内容部分或全部是AI推断（信号差）"
+          },
+          "signal_notes": {
+            "type": "string",
+            "description": "当signal_inferred=true时，标注推断原因或信号差的具体位置"
+          },
+          "candidate_answer": {
+            "type": "string",
+            "minLength": 0,
+            "description": "候选人的回答（已二次过滤口语词）"
+          }
+        }
+      }
+    },
+    "candidate_retro_qa": {
+      "type": "array",
+      "description": "候选人反问QA列表",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["index", "question", "interviewer_answer"],
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "signal_inferred": {
+            "type": "boolean",
+            "default": false
+          },
+          "signal_notes": {
+            "type": "string"
+          },
+          "interviewer_answer": {
+            "type": "string",
+            "description": "面试官对候选人反问的回答（尽量还原原文）"
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "备注信息，如发言人角色难以区分的警告、文字稿异常提示等"
+    }
+  }
+}
