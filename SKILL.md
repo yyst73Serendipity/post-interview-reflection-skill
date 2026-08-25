@@ -1,5 +1,5 @@
 ---
-name: interview-reflection
+name: post-interview-reflection-skill
 description: |
   【面试复盘专家】AI产品经理专属面试复盘工具。用户上传「简历PDF + 岗位介绍 + 面试录音文字稿」3个资料并说一句类似"帮我复盘这次面试"后，全自动完成：文件解析 → QA信息提取 → 逐条打分分析 → 生成规范Markdown → 保存到 Obsidian vault (/Users/yst/Documents/obsidianbase/) 目录。
   核心能力：
