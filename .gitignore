@@ -25,4 +25,7 @@ venv/
 examples/*.pdf
 output/
 
+# Internal docs (design docs, plans - not for public)
+docs/
+
 
